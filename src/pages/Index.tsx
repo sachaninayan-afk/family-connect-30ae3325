@@ -223,7 +223,7 @@ const Index = () => {
         )}
       </main>
 
-      <FamilyForm open={formOpen} onOpenChange={setFormOpen} editing={editing} />
+      
 
       <AlertDialog open={!!deleteTarget} onOpenChange={(o) => !o && setDeleteTarget(null)}>
         <AlertDialogContent>
