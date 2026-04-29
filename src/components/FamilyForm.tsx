@@ -119,31 +119,45 @@ export function FamilyForm({ editing, onSaved, onCancel }: Props) {
       <Field label="Child Name *">
         <Input value={form.child_name} onChange={(e) => set("child_name", e.target.value)} required />
       </Field>
-      <Field label="Father Name">
-        <Input value={form.father_name ?? ""} onChange={(e) => set("father_name", e.target.value)} />
+      <Field label="Father Name *">
+        <Input value={form.father_name ?? ""} onChange={(e) => set("father_name", e.target.value)} required />
       </Field>
-      <Field label="Mother Name">
-        <Input value={form.mother_name ?? ""} onChange={(e) => set("mother_name", e.target.value)} />
+      <Field label="Mother Name *">
+        <Input value={form.mother_name ?? ""} onChange={(e) => set("mother_name", e.target.value)} required />
       </Field>
-      <Field label="Surname">
-        <Input value={form.surname ?? ""} onChange={(e) => set("surname", e.target.value)} />
+      <Field label="Surname *">
+        <Input value={form.surname ?? ""} onChange={(e) => set("surname", e.target.value)} required />
       </Field>
-      <Field label="Standard">
-        <Input value={form.standard ?? ""} onChange={(e) => set("standard", e.target.value)} />
+      <Field label="Standard *">
+        <Input value={form.standard ?? ""} onChange={(e) => set("standard", e.target.value)} required />
       </Field>
-      <Field label="Date of Birth">
-        <Input type="date" value={form.date_of_birth ?? ""} onChange={(e) => set("date_of_birth", e.target.value)} />
+      <Field label="Date of Birth *">
+        <Input type="date" value={form.date_of_birth ?? ""} onChange={(e) => set("date_of_birth", e.target.value)} required />
       </Field>
-      <Field label="School Name">
-        <Input value={form.school_name ?? ""} onChange={(e) => set("school_name", e.target.value)} />
+      <Field label="School Name *">
+        <Input value={form.school_name ?? ""} onChange={(e) => set("school_name", e.target.value)} required />
       </Field>
-      <Field label="Father Mobile">
-        <Input inputMode="tel" value={form.father_mobile ?? ""} onChange={(e) => set("father_mobile", e.target.value)} />
+      <Field label="Father Mobile * (10 digits)">
+        <Input
+          inputMode="numeric"
+          pattern="\d{10}"
+          maxLength={10}
+          value={form.father_mobile ?? ""}
+          onChange={(e) => set("father_mobile", e.target.value.replace(/\D/g, "").slice(0, 10))}
+          required
+        />
       </Field>
-      <Field label="Mother Mobile">
-        <Input inputMode="tel" value={form.mother_mobile ?? ""} onChange={(e) => set("mother_mobile", e.target.value)} />
+      <Field label="Mother Mobile * (10 digits)">
+        <Input
+          inputMode="numeric"
+          pattern="\d{10}"
+          maxLength={10}
+          value={form.mother_mobile ?? ""}
+          onChange={(e) => set("mother_mobile", e.target.value.replace(/\D/g, "").slice(0, 10))}
+          required
+        />
       </Field>
-      <Field label="Category">
+      <Field label="Category *">
         <Select value={form.category} onValueChange={(v) => set("category", v)}>
           <SelectTrigger><SelectValue /></SelectTrigger>
           <SelectContent>
@@ -152,8 +166,8 @@ export function FamilyForm({ editing, onSaved, onCancel }: Props) {
           </SelectContent>
         </Select>
       </Field>
-      <Field label="Home Address" className="sm:col-span-2">
-        <Textarea rows={2} value={form.home_address ?? ""} onChange={(e) => set("home_address", e.target.value)} />
+      <Field label="Home Address *" className="sm:col-span-2">
+        <Textarea rows={2} value={form.home_address ?? ""} onChange={(e) => set("home_address", e.target.value)} required />
       </Field>
 
       <div className="sm:col-span-2 flex flex-col-reverse sm:flex-row sm:justify-end gap-2 pt-2">
