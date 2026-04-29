@@ -60,23 +60,39 @@ export function FamilyForm({ editing, onSaved, onCancel }: Props) {
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.karyakar_name || !form.family_number || !form.child_name || !form.date_of_visit) {
-      toast.error("Please fill required fields");
+    const required: Array<[keyof typeof form, string]> = [
+      ["date_of_visit", "Date of Visit"],
+      ["karyakar_name", "Karyakar Name"],
+      ["family_number", "Family Number"],
+      ["child_name", "Child Name"],
+      ["father_name", "Father Name"],
+      ["mother_name", "Mother Name"],
+      ["surname", "Surname"],
+      ["standard", "Standard"],
+      ["date_of_birth", "Date of Birth"],
+      ["school_name", "School Name"],
+      ["home_address", "Home Address"],
+      ["father_mobile", "Father Mobile"],
+      ["mother_mobile", "Mother Mobile"],
+      ["category", "Category"],
+    ];
+    for (const [k, label] of required) {
+      if (!String(form[k] ?? "").trim()) {
+        toast.error(`${label} is required`);
+        return;
+      }
+    }
+    const isTenDigits = (v: string) => /^\d{10}$/.test(v.trim());
+    if (!isTenDigits(form.father_mobile ?? "")) {
+      toast.error("Father Mobile must be exactly 10 digits");
+      return;
+    }
+    if (!isTenDigits(form.mother_mobile ?? "")) {
+      toast.error("Mother Mobile must be exactly 10 digits");
       return;
     }
     setSaving(true);
-    const payload = {
-      ...form,
-      date_of_birth: form.date_of_birth || null,
-      father_name: form.father_name || null,
-      mother_name: form.mother_name || null,
-      surname: form.surname || null,
-      standard: form.standard || null,
-      school_name: form.school_name || null,
-      home_address: form.home_address || null,
-      father_mobile: form.father_mobile || null,
-      mother_mobile: form.mother_mobile || null,
-    };
+    const payload = { ...form };
     const { error } = editing
       ? await supabase.from("families").update(payload).eq("id", editing.id)
       : await supabase.from("families").insert(payload);
@@ -103,31 +119,45 @@ export function FamilyForm({ editing, onSaved, onCancel }: Props) {
       <Field label="Child Name *">
         <Input value={form.child_name} onChange={(e) => set("child_name", e.target.value)} required />
       </Field>
-      <Field label="Father Name">
-        <Input value={form.father_name ?? ""} onChange={(e) => set("father_name", e.target.value)} />
+      <Field label="Father Name *">
+        <Input value={form.father_name ?? ""} onChange={(e) => set("father_name", e.target.value)} required />
       </Field>
-      <Field label="Mother Name">
-        <Input value={form.mother_name ?? ""} onChange={(e) => set("mother_name", e.target.value)} />
+      <Field label="Mother Name *">
+        <Input value={form.mother_name ?? ""} onChange={(e) => set("mother_name", e.target.value)} required />
       </Field>
-      <Field label="Surname">
-        <Input value={form.surname ?? ""} onChange={(e) => set("surname", e.target.value)} />
+      <Field label="Surname *">
+        <Input value={form.surname ?? ""} onChange={(e) => set("surname", e.target.value)} required />
       </Field>
-      <Field label="Standard">
-        <Input value={form.standard ?? ""} onChange={(e) => set("standard", e.target.value)} />
+      <Field label="Standard *">
+        <Input value={form.standard ?? ""} onChange={(e) => set("standard", e.target.value)} required />
       </Field>
-      <Field label="Date of Birth">
-        <Input type="date" value={form.date_of_birth ?? ""} onChange={(e) => set("date_of_birth", e.target.value)} />
+      <Field label="Date of Birth *">
+        <Input type="date" value={form.date_of_birth ?? ""} onChange={(e) => set("date_of_birth", e.target.value)} required />
       </Field>
-      <Field label="School Name">
-        <Input value={form.school_name ?? ""} onChange={(e) => set("school_name", e.target.value)} />
+      <Field label="School Name *">
+        <Input value={form.school_name ?? ""} onChange={(e) => set("school_name", e.target.value)} required />
       </Field>
-      <Field label="Father Mobile">
-        <Input inputMode="tel" value={form.father_mobile ?? ""} onChange={(e) => set("father_mobile", e.target.value)} />
+      <Field label="Father Mobile * (10 digits)">
+        <Input
+          inputMode="numeric"
+          pattern="\d{10}"
+          maxLength={10}
+          value={form.father_mobile ?? ""}
+          onChange={(e) => set("father_mobile", e.target.value.replace(/\D/g, "").slice(0, 10))}
+          required
+        />
       </Field>
-      <Field label="Mother Mobile">
-        <Input inputMode="tel" value={form.mother_mobile ?? ""} onChange={(e) => set("mother_mobile", e.target.value)} />
+      <Field label="Mother Mobile * (10 digits)">
+        <Input
+          inputMode="numeric"
+          pattern="\d{10}"
+          maxLength={10}
+          value={form.mother_mobile ?? ""}
+          onChange={(e) => set("mother_mobile", e.target.value.replace(/\D/g, "").slice(0, 10))}
+          required
+        />
       </Field>
-      <Field label="Category">
+      <Field label="Category *">
         <Select value={form.category} onValueChange={(v) => set("category", v)}>
           <SelectTrigger><SelectValue /></SelectTrigger>
           <SelectContent>
@@ -136,8 +166,8 @@ export function FamilyForm({ editing, onSaved, onCancel }: Props) {
           </SelectContent>
         </Select>
       </Field>
-      <Field label="Home Address" className="sm:col-span-2">
-        <Textarea rows={2} value={form.home_address ?? ""} onChange={(e) => set("home_address", e.target.value)} />
+      <Field label="Home Address *" className="sm:col-span-2">
+        <Textarea rows={2} value={form.home_address ?? ""} onChange={(e) => set("home_address", e.target.value)} required />
       </Field>
 
       <div className="sm:col-span-2 flex flex-col-reverse sm:flex-row sm:justify-end gap-2 pt-2">
