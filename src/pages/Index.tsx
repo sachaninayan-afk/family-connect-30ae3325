@@ -147,9 +147,15 @@ const Index = () => {
               </p>
             </div>
           </div>
-          <Button onClick={handleAdd} size="sm" className="shrink-0">
-            <Plus className="h-4 w-4 mr-1" /> Add
-          </Button>
+          <div className="flex items-center gap-2 shrink-0">
+            <Button onClick={handleExport} size="sm" variant="outline" disabled={filtered.length === 0}>
+              <Download className="h-4 w-4 sm:mr-1" />
+              <span className="hidden sm:inline">Export{filterKaryakar !== "all" ? ` (${filterKaryakar})` : ""}</span>
+            </Button>
+            <Button onClick={handleAdd} size="sm">
+              <Plus className="h-4 w-4 mr-1" /> Add
+            </Button>
+          </div>
         </div>
 
         <div className="max-w-5xl mx-auto px-4 pb-3 space-y-2">
