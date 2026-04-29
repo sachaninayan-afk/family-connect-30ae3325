@@ -14,7 +14,66 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      families: {
+        Row: {
+          category: string
+          child_name: string
+          created_at: string
+          date_of_birth: string | null
+          date_of_visit: string
+          family_number: string
+          father_mobile: string | null
+          father_name: string | null
+          home_address: string | null
+          id: string
+          karyakar_name: string
+          mother_mobile: string | null
+          mother_name: string | null
+          school_name: string | null
+          standard: string | null
+          surname: string | null
+          updated_at: string
+        }
+        Insert: {
+          category?: string
+          child_name: string
+          created_at?: string
+          date_of_birth?: string | null
+          date_of_visit: string
+          family_number: string
+          father_mobile?: string | null
+          father_name?: string | null
+          home_address?: string | null
+          id?: string
+          karyakar_name: string
+          mother_mobile?: string | null
+          mother_name?: string | null
+          school_name?: string | null
+          standard?: string | null
+          surname?: string | null
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          child_name?: string
+          created_at?: string
+          date_of_birth?: string | null
+          date_of_visit?: string
+          family_number?: string
+          father_mobile?: string | null
+          father_name?: string | null
+          home_address?: string | null
+          id?: string
+          karyakar_name?: string
+          mother_mobile?: string | null
+          mother_name?: string | null
+          school_name?: string | null
+          standard?: string | null
+          surname?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
