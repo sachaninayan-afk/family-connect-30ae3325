@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,15 +8,13 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Download, Plus, Search, Users, X } from "lucide-react";
 import { toast } from "sonner";
 import * as XLSX from "xlsx";
-import { FamilyForm } from "@/components/FamilyForm";
 import { RecordCard } from "@/components/RecordCard";
 import type { FamilyRecord } from "@/lib/types";
 
 const Index = () => {
+  const navigate = useNavigate();
   const [records, setRecords] = useState<FamilyRecord[]>([]);
   const [loading, setLoading] = useState(true);
-  const [formOpen, setFormOpen] = useState(false);
-  const [editing, setEditing] = useState<FamilyRecord | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<FamilyRecord | null>(null);
 
   const [search, setSearch] = useState("");
@@ -71,8 +70,8 @@ const Index = () => {
     return Array.from(map.entries());
   }, [filtered]);
 
-  const handleEdit = (r: FamilyRecord) => { setEditing(r); setFormOpen(true); };
-  const handleAdd = () => { setEditing(null); setFormOpen(true); };
+  const handleEdit = (r: FamilyRecord) => navigate(`/edit/${r.id}`);
+  const handleAdd = () => navigate("/new");
 
   const confirmDelete = async () => {
     if (!deleteTarget) return;
