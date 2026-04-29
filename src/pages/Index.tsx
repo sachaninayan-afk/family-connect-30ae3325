@@ -85,6 +85,47 @@ const Index = () => {
   const clearFilters = () => { setSearch(""); setFilterDate(""); setFilterKaryakar("all"); setFilterCategory("all"); };
   const hasFilters = search || filterDate || filterKaryakar !== "all" || filterCategory !== "all";
 
+  const handleExport = () => {
+    if (filtered.length === 0) {
+      toast.error("No records to export");
+      return;
+    }
+    // Sort ascending by date then created_at for sequential numbering
+    const sorted = [...filtered].sort((a, b) => {
+      if (a.date_of_visit !== b.date_of_visit) return a.date_of_visit.localeCompare(b.date_of_visit);
+      return a.created_at.localeCompare(b.created_at);
+    });
+    const rows = sorted.map((r, i) => ({
+      "Family No.": i + 1,
+      "Date of Visit": r.date_of_visit,
+      "Karyakar Name": r.karyakar_name,
+      "Original Family Number": r.family_number,
+      "Child Name": r.child_name,
+      "Surname": r.surname ?? "",
+      "Father Name": r.father_name ?? "",
+      "Mother Name": r.mother_name ?? "",
+      "Standard": r.standard ?? "",
+      "Date of Birth": r.date_of_birth ?? "",
+      "School Name": r.school_name ?? "",
+      "Home Address": r.home_address ?? "",
+      "Father Mobile": r.father_mobile ?? "",
+      "Mother Mobile": r.mother_mobile ?? "",
+      "Category": r.category,
+    }));
+    const ws = XLSX.utils.json_to_sheet(rows);
+    ws["!cols"] = Object.keys(rows[0]).map((k) => ({
+      wch: Math.max(k.length, ...rows.map((r) => String((r as any)[k] ?? "").length)) + 2,
+    }));
+    const wb = XLSX.utils.book_new();
+    const sheetName = filterKaryakar !== "all" ? filterKaryakar.slice(0, 28) : "All Karyakars";
+    XLSX.utils.book_append_sheet(wb, ws, sheetName);
+    const today = new Date().toISOString().slice(0, 10);
+    const scope = filterKaryakar !== "all" ? filterKaryakar.replace(/[^a-z0-9]/gi, "_") : "all";
+    const fileName = `family-data_${scope}_${today}.xlsx`;
+    XLSX.writeFile(wb, fileName);
+    toast.success(`Exported ${rows.length} record${rows.length === 1 ? "" : "s"}`);
+  };
+
   const formatDate = (d: string) => {
     const date = new Date(d + "T00:00:00");
     return date.toLocaleDateString(undefined, { weekday: "short", day: "numeric", month: "short", year: "numeric" });
