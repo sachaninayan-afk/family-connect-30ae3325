@@ -60,23 +60,39 @@ export function FamilyForm({ editing, onSaved, onCancel }: Props) {
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.karyakar_name || !form.family_number || !form.child_name || !form.date_of_visit) {
-      toast.error("Please fill required fields");
+    const required: Array<[keyof typeof form, string]> = [
+      ["date_of_visit", "Date of Visit"],
+      ["karyakar_name", "Karyakar Name"],
+      ["family_number", "Family Number"],
+      ["child_name", "Child Name"],
+      ["father_name", "Father Name"],
+      ["mother_name", "Mother Name"],
+      ["surname", "Surname"],
+      ["standard", "Standard"],
+      ["date_of_birth", "Date of Birth"],
+      ["school_name", "School Name"],
+      ["home_address", "Home Address"],
+      ["father_mobile", "Father Mobile"],
+      ["mother_mobile", "Mother Mobile"],
+      ["category", "Category"],
+    ];
+    for (const [k, label] of required) {
+      if (!String(form[k] ?? "").trim()) {
+        toast.error(`${label} is required`);
+        return;
+      }
+    }
+    const isTenDigits = (v: string) => /^\d{10}$/.test(v.trim());
+    if (!isTenDigits(form.father_mobile ?? "")) {
+      toast.error("Father Mobile must be exactly 10 digits");
+      return;
+    }
+    if (!isTenDigits(form.mother_mobile ?? "")) {
+      toast.error("Mother Mobile must be exactly 10 digits");
       return;
     }
     setSaving(true);
-    const payload = {
-      ...form,
-      date_of_birth: form.date_of_birth || null,
-      father_name: form.father_name || null,
-      mother_name: form.mother_name || null,
-      surname: form.surname || null,
-      standard: form.standard || null,
-      school_name: form.school_name || null,
-      home_address: form.home_address || null,
-      father_mobile: form.father_mobile || null,
-      mother_mobile: form.mother_mobile || null,
-    };
+    const payload = { ...form };
     const { error } = editing
       ? await supabase.from("families").update(payload).eq("id", editing.id)
       : await supabase.from("families").insert(payload);
