@@ -4,8 +4,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { Plus, Search, Users, X } from "lucide-react";
+import { Download, Plus, Search, Users, X } from "lucide-react";
 import { toast } from "sonner";
+import * as XLSX from "xlsx";
 import { FamilyForm } from "@/components/FamilyForm";
 import { RecordCard } from "@/components/RecordCard";
 import type { FamilyRecord } from "@/lib/types";
@@ -84,6 +85,47 @@ const Index = () => {
   const clearFilters = () => { setSearch(""); setFilterDate(""); setFilterKaryakar("all"); setFilterCategory("all"); };
   const hasFilters = search || filterDate || filterKaryakar !== "all" || filterCategory !== "all";
 
+  const handleExport = () => {
+    if (filtered.length === 0) {
+      toast.error("No records to export");
+      return;
+    }
+    // Sort ascending by date then created_at for sequential numbering
+    const sorted = [...filtered].sort((a, b) => {
+      if (a.date_of_visit !== b.date_of_visit) return a.date_of_visit.localeCompare(b.date_of_visit);
+      return a.created_at.localeCompare(b.created_at);
+    });
+    const rows = sorted.map((r, i) => ({
+      "Family No.": i + 1,
+      "Date of Visit": r.date_of_visit,
+      "Karyakar Name": r.karyakar_name,
+      "Original Family Number": r.family_number,
+      "Child Name": r.child_name,
+      "Surname": r.surname ?? "",
+      "Father Name": r.father_name ?? "",
+      "Mother Name": r.mother_name ?? "",
+      "Standard": r.standard ?? "",
+      "Date of Birth": r.date_of_birth ?? "",
+      "School Name": r.school_name ?? "",
+      "Home Address": r.home_address ?? "",
+      "Father Mobile": r.father_mobile ?? "",
+      "Mother Mobile": r.mother_mobile ?? "",
+      "Category": r.category,
+    }));
+    const ws = XLSX.utils.json_to_sheet(rows);
+    ws["!cols"] = Object.keys(rows[0]).map((k) => ({
+      wch: Math.max(k.length, ...rows.map((r) => String((r as any)[k] ?? "").length)) + 2,
+    }));
+    const wb = XLSX.utils.book_new();
+    const sheetName = filterKaryakar !== "all" ? filterKaryakar.slice(0, 28) : "All Karyakars";
+    XLSX.utils.book_append_sheet(wb, ws, sheetName);
+    const today = new Date().toISOString().slice(0, 10);
+    const scope = filterKaryakar !== "all" ? filterKaryakar.replace(/[^a-z0-9]/gi, "_") : "all";
+    const fileName = `family-data_${scope}_${today}.xlsx`;
+    XLSX.writeFile(wb, fileName);
+    toast.success(`Exported ${rows.length} record${rows.length === 1 ? "" : "s"}`);
+  };
+
   const formatDate = (d: string) => {
     const date = new Date(d + "T00:00:00");
     return date.toLocaleDateString(undefined, { weekday: "short", day: "numeric", month: "short", year: "numeric" });
@@ -105,9 +147,15 @@ const Index = () => {
               </p>
             </div>
           </div>
-          <Button onClick={handleAdd} size="sm" className="shrink-0">
-            <Plus className="h-4 w-4 mr-1" /> Add
-          </Button>
+          <div className="flex items-center gap-2 shrink-0">
+            <Button onClick={handleExport} size="sm" variant="outline" disabled={filtered.length === 0}>
+              <Download className="h-4 w-4 sm:mr-1" />
+              <span className="hidden sm:inline">Export{filterKaryakar !== "all" ? ` (${filterKaryakar})` : ""}</span>
+            </Button>
+            <Button onClick={handleAdd} size="sm">
+              <Plus className="h-4 w-4 mr-1" /> Add
+            </Button>
+          </div>
         </div>
 
         <div className="max-w-5xl mx-auto px-4 pb-3 space-y-2">
