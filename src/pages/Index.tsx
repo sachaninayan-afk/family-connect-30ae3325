@@ -127,7 +127,75 @@ const Index = () => {
     toast.success(`Exported ${rows.length} record${rows.length === 1 ? "" : "s"}`);
   };
 
-  const formatDate = (d: string) => {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [restoreData, setRestoreData] = useState<FamilyRecord[] | null>(null);
+
+  const handleBackup = () => {
+    if (records.length === 0) {
+      toast.error("No records to backup");
+      return;
+    }
+    const payload = {
+      app: "MISSION-600",
+      version: 1,
+      exported_at: new Date().toISOString(),
+      count: records.length,
+      records,
+    };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `mission-600_backup_${new Date().toISOString().slice(0, 19).replace(/[:T]/g, "-")}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast.success(`Backed up ${records.length} records`);
+  };
+
+  const handleRestoreFile = async (file: File) => {
+    try {
+      const text = await file.text();
+      const parsed = JSON.parse(text);
+      const list: FamilyRecord[] = Array.isArray(parsed) ? parsed : parsed.records;
+      if (!Array.isArray(list) || list.length === 0) throw new Error("No records in file");
+      const required = ["date_of_visit", "karyakar_name", "family_number", "child_name", "category"];
+      for (const r of list) {
+        for (const k of required) {
+          if (!(k in r)) throw new Error(`Missing field "${k}" in backup`);
+        }
+      }
+      setRestoreData(list);
+    } catch (e: any) {
+      toast.error(`Invalid backup: ${e.message}`);
+    } finally {
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  };
+
+  const confirmRestore = async () => {
+    if (!restoreData) return;
+    const rows = restoreData.map((r) => ({
+      id: r.id,
+      date_of_visit: r.date_of_visit,
+      karyakar_name: r.karyakar_name,
+      family_number: r.family_number,
+      child_name: r.child_name,
+      father_name: r.father_name,
+      mother_name: r.mother_name,
+      surname: r.surname,
+      standard: r.standard,
+      date_of_birth: r.date_of_birth,
+      school_name: r.school_name,
+      home_address: r.home_address,
+      father_mobile: r.father_mobile,
+      mother_mobile: r.mother_mobile,
+      category: r.category,
+    }));
+    const { error } = await supabase.from("families").upsert(rows, { onConflict: "id" });
+    setRestoreData(null);
+    if (error) toast.error(`Restore failed: ${error.message}`);
+    else toast.success(`Restored ${rows.length} records`);
+  };
     const date = new Date(d + "T00:00:00");
     return date.toLocaleDateString(undefined, { weekday: "short", day: "numeric", month: "short", year: "numeric" });
   };
