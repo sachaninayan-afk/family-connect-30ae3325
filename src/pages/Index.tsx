@@ -218,7 +218,7 @@ const Index = () => {
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-2 shrink-0">
+          <div className="flex items-center gap-1.5 shrink-0">
             <Button onClick={handleExport} size="sm" variant="outline" disabled={filtered.length === 0}>
               <Download className="h-4 w-4 sm:mr-1" />
               <span className="hidden sm:inline">Export{filterKaryakar !== "all" ? ` (${filterKaryakar})` : ""}</span>
@@ -226,6 +226,30 @@ const Index = () => {
             <Button onClick={handleAdd} size="sm">
               <Plus className="h-4 w-4 mr-1" /> Add
             </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button size="icon" variant="ghost" className="h-9 w-9"><MoreVertical className="h-4 w-4" /></Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={handleBackup} disabled={records.length === 0}>
+                  <DatabaseBackup className="h-4 w-4 mr-2" /> Backup all data (JSON)
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => fileInputRef.current?.click()}>
+                  <Upload className="h-4 w-4 mr-2" /> Restore from backup
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => { try { sessionStorage.removeItem("m600_unlocked_v1"); } catch {} window.location.reload(); }}>
+                  Lock app
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="application/json,.json"
+              className="hidden"
+              onChange={(e) => { const f = e.target.files?.[0]; if (f) handleRestoreFile(f); }}
+            />
           </div>
         </div>
 
