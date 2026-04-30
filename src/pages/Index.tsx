@@ -196,6 +196,8 @@ const Index = () => {
     if (error) toast.error(`Restore failed: ${error.message}`);
     else toast.success(`Restored ${rows.length} records`);
   };
+
+  const formatDate = (d: string) => {
     const date = new Date(d + "T00:00:00");
     return date.toLocaleDateString(undefined, { weekday: "short", day: "numeric", month: "short", year: "numeric" });
   };
