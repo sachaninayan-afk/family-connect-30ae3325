@@ -1,14 +1,16 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { Download, Plus, Search, Users, X } from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Download, Plus, Search, Users, X, MoreVertical, DatabaseBackup, Upload } from "lucide-react";
 import { toast } from "sonner";
 import * as XLSX from "xlsx";
 import { RecordCard } from "@/components/RecordCard";
+
 import type { FamilyRecord } from "@/lib/types";
 
 const Index = () => {
@@ -125,6 +127,76 @@ const Index = () => {
     toast.success(`Exported ${rows.length} record${rows.length === 1 ? "" : "s"}`);
   };
 
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [restoreData, setRestoreData] = useState<FamilyRecord[] | null>(null);
+
+  const handleBackup = () => {
+    if (records.length === 0) {
+      toast.error("No records to backup");
+      return;
+    }
+    const payload = {
+      app: "MISSION-600",
+      version: 1,
+      exported_at: new Date().toISOString(),
+      count: records.length,
+      records,
+    };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `mission-600_backup_${new Date().toISOString().slice(0, 19).replace(/[:T]/g, "-")}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast.success(`Backed up ${records.length} records`);
+  };
+
+  const handleRestoreFile = async (file: File) => {
+    try {
+      const text = await file.text();
+      const parsed = JSON.parse(text);
+      const list: FamilyRecord[] = Array.isArray(parsed) ? parsed : parsed.records;
+      if (!Array.isArray(list) || list.length === 0) throw new Error("No records in file");
+      const required = ["date_of_visit", "karyakar_name", "family_number", "child_name", "category"];
+      for (const r of list) {
+        for (const k of required) {
+          if (!(k in r)) throw new Error(`Missing field "${k}" in backup`);
+        }
+      }
+      setRestoreData(list);
+    } catch (e: any) {
+      toast.error(`Invalid backup: ${e.message}`);
+    } finally {
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  };
+
+  const confirmRestore = async () => {
+    if (!restoreData) return;
+    const rows = restoreData.map((r) => ({
+      id: r.id,
+      date_of_visit: r.date_of_visit,
+      karyakar_name: r.karyakar_name,
+      family_number: r.family_number,
+      child_name: r.child_name,
+      father_name: r.father_name,
+      mother_name: r.mother_name,
+      surname: r.surname,
+      standard: r.standard,
+      date_of_birth: r.date_of_birth,
+      school_name: r.school_name,
+      home_address: r.home_address,
+      father_mobile: r.father_mobile,
+      mother_mobile: r.mother_mobile,
+      category: r.category,
+    }));
+    const { error } = await supabase.from("families").upsert(rows, { onConflict: "id" });
+    setRestoreData(null);
+    if (error) toast.error(`Restore failed: ${error.message}`);
+    else toast.success(`Restored ${rows.length} records`);
+  };
+
   const formatDate = (d: string) => {
     const date = new Date(d + "T00:00:00");
     return date.toLocaleDateString(undefined, { weekday: "short", day: "numeric", month: "short", year: "numeric" });
@@ -146,7 +218,7 @@ const Index = () => {
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-2 shrink-0">
+          <div className="flex items-center gap-1.5 shrink-0">
             <Button onClick={handleExport} size="sm" variant="outline" disabled={filtered.length === 0}>
               <Download className="h-4 w-4 sm:mr-1" />
               <span className="hidden sm:inline">Export{filterKaryakar !== "all" ? ` (${filterKaryakar})` : ""}</span>
@@ -154,6 +226,30 @@ const Index = () => {
             <Button onClick={handleAdd} size="sm">
               <Plus className="h-4 w-4 mr-1" /> Add
             </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button size="icon" variant="ghost" className="h-9 w-9"><MoreVertical className="h-4 w-4" /></Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={handleBackup} disabled={records.length === 0}>
+                  <DatabaseBackup className="h-4 w-4 mr-2" /> Backup all data (JSON)
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => fileInputRef.current?.click()}>
+                  <Upload className="h-4 w-4 mr-2" /> Restore from backup
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => { try { sessionStorage.removeItem("m600_unlocked_v1"); } catch {} window.location.reload(); }}>
+                  Lock app
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="application/json,.json"
+              className="hidden"
+              onChange={(e) => { const f = e.target.files?.[0]; if (f) handleRestoreFile(f); }}
+            />
           </div>
         </div>
 
@@ -236,6 +332,21 @@ const Index = () => {
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction onClick={confirmDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">Delete</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog open={!!restoreData} onOpenChange={(o) => !o && setRestoreData(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Restore {restoreData?.length} records?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Records with matching IDs will be overwritten. New records will be added. Existing records not in the backup will be kept untouched.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmRestore}>Restore</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
