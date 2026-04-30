@@ -139,7 +139,7 @@ const Index = () => {
               <Users className="h-5 w-5" />
             </div>
             <div className="min-w-0">
-              <h1 className="font-semibold text-base sm:text-lg leading-tight truncate">Family Data</h1>
+              <h1 className="font-semibold text-base sm:text-lg leading-tight truncate">MISSION - 600</h1>
               <p className="text-[11px] text-muted-foreground leading-tight">
                 {records.length} total {records.length === 1 ? "record" : "records"}
                 {hasFilters && ` • ${filtered.length} shown`}
@@ -181,7 +181,7 @@ const Index = () => {
               <SelectContent>
                 <SelectItem value="all">All Categories</SelectItem>
                 <SelectItem value="Satsangi">Satsangi</SelectItem>
-                <SelectItem value="Non-Satsangi">Non-Satsangi</SelectItem>
+                <SelectItem value="Gunbhavi">Gunbhavi</SelectItem>
               </SelectContent>
             </Select>
             <Button variant="outline" size="sm" onClick={clearFilters} disabled={!hasFilters} className="h-9">
@@ -228,7 +228,7 @@ const Index = () => {
       <AlertDialog open={!!deleteTarget} onOpenChange={(o) => !o && setDeleteTarget(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete this record?</AlertDialogTitle>
+            <AlertDialogTitle>Are you sure you want to delete?</AlertDialogTitle>
             <AlertDialogDescription>
               This will permanently delete the record for <b>{deleteTarget?.child_name}</b>. This cannot be undone.
             </AlertDialogDescription>

@@ -162,7 +162,7 @@ export function FamilyForm({ editing, onSaved, onCancel }: Props) {
           <SelectTrigger><SelectValue /></SelectTrigger>
           <SelectContent>
             <SelectItem value="Satsangi">Satsangi</SelectItem>
-            <SelectItem value="Non-Satsangi">Non-Satsangi</SelectItem>
+            <SelectItem value="Gunbhavi">Gunbhavi</SelectItem>
           </SelectContent>
         </Select>
       </Field>
