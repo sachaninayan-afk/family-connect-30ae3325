@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import Index from "./pages/Index.tsx";
 import FormPage from "./pages/FormPage.tsx";
 import NotFound from "./pages/NotFound.tsx";
+import { PasscodeGate } from "./components/PasscodeGate";
 
 const queryClient = new QueryClient();
 
@@ -15,13 +16,15 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/new" element={<FormPage />} />
-          <Route path="/edit/:id" element={<FormPage />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+        <PasscodeGate>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/new" element={<FormPage />} />
+            <Route path="/edit/:id" element={<FormPage />} />
+            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </PasscodeGate>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
