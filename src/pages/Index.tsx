@@ -10,7 +10,7 @@ import { Download, Plus, Search, Users, X, MoreVertical, DatabaseBackup, Upload 
 import { toast } from "sonner";
 import * as XLSX from "xlsx";
 import { RecordCard } from "@/components/RecordCard";
-import { LockButton } from "@/components/PasscodeGate";
+
 import type { FamilyRecord } from "@/lib/types";
 
 const Index = () => {
