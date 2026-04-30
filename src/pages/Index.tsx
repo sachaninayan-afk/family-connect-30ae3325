@@ -1,14 +1,16 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { Download, Plus, Search, Users, X } from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Download, Plus, Search, Users, X, MoreVertical, DatabaseBackup, Upload } from "lucide-react";
 import { toast } from "sonner";
 import * as XLSX from "xlsx";
 import { RecordCard } from "@/components/RecordCard";
+import { LockButton } from "@/components/PasscodeGate";
 import type { FamilyRecord } from "@/lib/types";
 
 const Index = () => {
