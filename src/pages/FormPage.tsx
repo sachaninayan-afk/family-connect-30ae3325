@@ -5,20 +5,24 @@ import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { FamilyForm } from "@/components/FamilyForm";
-import type { FamilyRecord } from "@/lib/types";
+import type { FamilyVisit } from "@/lib/types";
 
 const FormPage = () => {
   const navigate = useNavigate();
   const { id } = useParams();
-  const [editing, setEditing] = useState<FamilyRecord | null>(null);
+  const [editing, setEditing] = useState<FamilyVisit | null>(null);
   const [loading, setLoading] = useState(!!id);
 
   useEffect(() => {
     if (!id) return;
     (async () => {
-      const { data, error } = await supabase.from("families").select("*").eq("id", id).maybeSingle();
+      const { data, error } = await supabase
+        .from("family_visits")
+        .select("*")
+        .eq("id", id)
+        .maybeSingle();
       if (error) toast.error(error.message);
-      else setEditing(data as FamilyRecord | null);
+      else setEditing(data as FamilyVisit | null);
       setLoading(false);
     })();
   }, [id]);
