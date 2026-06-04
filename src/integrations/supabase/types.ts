@@ -74,6 +74,75 @@ export type Database = {
         }
         Relationships: []
       }
+      family_visits: {
+        Row: {
+          category: string
+          created_at: string
+          date_of_visit: string
+          family_head_mobile: string
+          family_head_name: string
+          home_address: string | null
+          id: string
+          karyakar_names: string[]
+          kid1_name: string | null
+          kid1_std: string | null
+          kid2_name: string | null
+          kid2_std: string | null
+          kid3_name: string | null
+          kid3_std: string | null
+          kids_mother_mobile: string | null
+          surname: string
+          total_females: number
+          total_kids: number
+          total_males: number
+          updated_at: string
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          date_of_visit: string
+          family_head_mobile: string
+          family_head_name: string
+          home_address?: string | null
+          id?: string
+          karyakar_names?: string[]
+          kid1_name?: string | null
+          kid1_std?: string | null
+          kid2_name?: string | null
+          kid2_std?: string | null
+          kid3_name?: string | null
+          kid3_std?: string | null
+          kids_mother_mobile?: string | null
+          surname: string
+          total_females?: number
+          total_kids?: number
+          total_males?: number
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          date_of_visit?: string
+          family_head_mobile?: string
+          family_head_name?: string
+          home_address?: string | null
+          id?: string
+          karyakar_names?: string[]
+          kid1_name?: string | null
+          kid1_std?: string | null
+          kid2_name?: string | null
+          kid2_std?: string | null
+          kid3_name?: string | null
+          kid3_std?: string | null
+          kids_mother_mobile?: string | null
+          surname?: string
+          total_females?: number
+          total_kids?: number
+          total_males?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
