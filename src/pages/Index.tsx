@@ -85,7 +85,7 @@ const Index = () => {
   const karyakars = useMemo(() => {
     const set = new Set<string>(allKaryakars);
     records.forEach((r) => (r.karyakar_names ?? []).forEach((n) => set.add(n)));
-    return Array.from(set).sort();
+    return Array.from(set).sort((a, b) => a.localeCompare(b, undefined, { sensitivity: "base" }));
   }, [records, allKaryakars]);
 
   const filtered = useMemo(() => {
