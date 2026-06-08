@@ -81,12 +81,12 @@ const Index = () => {
     };
   }, []);
 
+  const allKaryakars = useKaryakars();
   const karyakars = useMemo(() => {
-    const set = new Set<string>();
+    const set = new Set<string>(allKaryakars);
     records.forEach((r) => (r.karyakar_names ?? []).forEach((n) => set.add(n)));
-    KARYAKAR_LIST.forEach((n) => set.add(n));
     return Array.from(set).sort();
-  }, [records]);
+  }, [records, allKaryakars]);
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
