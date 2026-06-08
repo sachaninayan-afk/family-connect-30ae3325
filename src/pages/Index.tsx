@@ -40,7 +40,9 @@ import {
 import { toast } from "sonner";
 import * as XLSX from "xlsx";
 import { RecordCard } from "@/components/RecordCard";
-import { KARYAKAR_LIST, type FamilyVisit } from "@/lib/types";
+import { type FamilyVisit } from "@/lib/types";
+import { useKaryakars } from "@/hooks/useKaryakars";
+import { AddKaryakarDialog } from "@/components/AddKaryakarDialog";
 
 const Index = () => {
   const navigate = useNavigate();
