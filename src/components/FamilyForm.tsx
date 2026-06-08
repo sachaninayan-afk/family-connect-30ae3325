@@ -167,7 +167,7 @@ export function FamilyForm({ editing, onSaved, onCancel }: Props) {
           </PopoverTrigger>
           <PopoverContent className="w-[--radix-popover-trigger-width] p-0 max-h-72 overflow-auto" align="start">
             <div className="p-2 space-y-1">
-              {KARYAKAR_LIST.map((name) => {
+              {karyakarList.map((name) => {
                 const checked = form.karyakar_names.includes(name);
                 return (
                   <label
