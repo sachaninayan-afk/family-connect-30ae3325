@@ -20,12 +20,12 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { ChevronDown } from "lucide-react";
 import {
-  KARYAKAR_LIST,
   VISIT_DATES,
   CATEGORIES,
   type FamilyVisit,
   type FamilyVisitInput,
 } from "@/lib/types";
+import { useKaryakars } from "@/hooks/useKaryakars";
 
 interface Props {
   editing?: FamilyVisit | null;
@@ -62,6 +62,7 @@ const isTenDigits = (v: string) => /^\d{10}$/.test(v.trim());
 
 export function FamilyForm({ editing, onSaved, onCancel }: Props) {
   const [form, setForm] = useState<FamilyVisitInput>(empty);
+  const karyakarList = useKaryakars();
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -166,7 +167,7 @@ export function FamilyForm({ editing, onSaved, onCancel }: Props) {
           </PopoverTrigger>
           <PopoverContent className="w-[--radix-popover-trigger-width] p-0 max-h-72 overflow-auto" align="start">
             <div className="p-2 space-y-1">
-              {KARYAKAR_LIST.map((name) => {
+              {karyakarList.map((name) => {
                 const checked = form.karyakar_names.includes(name);
                 return (
                   <label

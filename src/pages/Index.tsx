@@ -40,7 +40,9 @@ import {
 import { toast } from "sonner";
 import * as XLSX from "xlsx";
 import { RecordCard } from "@/components/RecordCard";
-import { KARYAKAR_LIST, type FamilyVisit } from "@/lib/types";
+import { type FamilyVisit } from "@/lib/types";
+import { useKaryakars } from "@/hooks/useKaryakars";
+import { AddKaryakarDialog } from "@/components/AddKaryakarDialog";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -79,12 +81,12 @@ const Index = () => {
     };
   }, []);
 
+  const allKaryakars = useKaryakars();
   const karyakars = useMemo(() => {
-    const set = new Set<string>();
+    const set = new Set<string>(allKaryakars);
     records.forEach((r) => (r.karyakar_names ?? []).forEach((n) => set.add(n)));
-    KARYAKAR_LIST.forEach((n) => set.add(n));
     return Array.from(set).sort();
-  }, [records]);
+  }, [records, allKaryakars]);
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -295,6 +297,7 @@ const Index = () => {
             </div>
           </div>
           <div className="flex items-center gap-1.5 shrink-0">
+            <AddKaryakarDialog />
             <Button
               onClick={handleExport}
               size="sm"
