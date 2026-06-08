@@ -20,12 +20,12 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { ChevronDown } from "lucide-react";
 import {
-  KARYAKAR_LIST,
   VISIT_DATES,
   CATEGORIES,
   type FamilyVisit,
   type FamilyVisitInput,
 } from "@/lib/types";
+import { useKaryakars } from "@/hooks/useKaryakars";
 
 interface Props {
   editing?: FamilyVisit | null;
