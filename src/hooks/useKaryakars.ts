@@ -9,7 +9,7 @@ export function useKaryakars() {
     const { data } = await supabase.from("karyakars").select("name");
     const set = new Set<string>(KARYAKAR_LIST);
     (data ?? []).forEach((r: { name: string }) => set.add(r.name));
-    setNames(Array.from(set).sort());
+    setNames(Array.from(set).sort((a, b) => a.localeCompare(b, undefined, { sensitivity: "base" })));
   };
 
   useEffect(() => {
