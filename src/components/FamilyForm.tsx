@@ -20,7 +20,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { ChevronDown } from "lucide-react";
 import {
-  VISIT_DATES,
+  
   CATEGORIES,
   type FamilyVisit,
   type FamilyVisitInput,
