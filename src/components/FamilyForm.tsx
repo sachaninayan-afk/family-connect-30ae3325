@@ -20,7 +20,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { ChevronDown } from "lucide-react";
 import {
-  VISIT_DATES,
+  
   CATEGORIES,
   type FamilyVisit,
   type FamilyVisitInput,
@@ -33,9 +33,11 @@ interface Props {
   onCancel: () => void;
 }
 
+const today = () => new Date().toISOString().slice(0, 10);
+
 const empty: FamilyVisitInput = {
   karyakar_names: [],
-  date_of_visit: VISIT_DATES[0],
+  date_of_visit: today(),
   surname: "",
   family_head_name: "",
   total_males: 0,
@@ -53,10 +55,6 @@ const empty: FamilyVisitInput = {
   home_address: "",
 };
 
-const formatDate = (d: string) => {
-  const dt = new Date(d + "T00:00:00");
-  return dt.toLocaleDateString(undefined, { day: "numeric", month: "long" });
-};
 
 const isTenDigits = (v: string) => /^\d{10}$/.test(v.trim());
 
@@ -185,14 +183,12 @@ export function FamilyForm({ editing, onSaved, onCancel }: Props) {
       </Field>
 
       <Field label="2. Date of Visit *">
-        <Select value={form.date_of_visit} onValueChange={(v) => set("date_of_visit", v)}>
-          <SelectTrigger><SelectValue /></SelectTrigger>
-          <SelectContent>
-            {VISIT_DATES.map((d) => (
-              <SelectItem key={d} value={d}>{formatDate(d)}</SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <Input
+          type="date"
+          value={form.date_of_visit}
+          onChange={(e) => set("date_of_visit", e.target.value)}
+          required
+        />
       </Field>
 
       <Field label="3. Surname *">
