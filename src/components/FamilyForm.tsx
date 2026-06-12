@@ -33,9 +33,11 @@ interface Props {
   onCancel: () => void;
 }
 
+const today = () => new Date().toISOString().slice(0, 10);
+
 const empty: FamilyVisitInput = {
   karyakar_names: [],
-  date_of_visit: VISIT_DATES[0],
+  date_of_visit: today(),
   surname: "",
   family_head_name: "",
   total_males: 0,
