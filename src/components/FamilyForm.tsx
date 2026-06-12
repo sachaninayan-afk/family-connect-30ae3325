@@ -55,10 +55,6 @@ const empty: FamilyVisitInput = {
   home_address: "",
 };
 
-const formatDate = (d: string) => {
-  const dt = new Date(d + "T00:00:00");
-  return dt.toLocaleDateString(undefined, { day: "numeric", month: "long" });
-};
 
 const isTenDigits = (v: string) => /^\d{10}$/.test(v.trim());
 
