@@ -183,14 +183,12 @@ export function FamilyForm({ editing, onSaved, onCancel }: Props) {
       </Field>
 
       <Field label="2. Date of Visit *">
-        <Select value={form.date_of_visit} onValueChange={(v) => set("date_of_visit", v)}>
-          <SelectTrigger><SelectValue /></SelectTrigger>
-          <SelectContent>
-            {VISIT_DATES.map((d) => (
-              <SelectItem key={d} value={d}>{formatDate(d)}</SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <Input
+          type="date"
+          value={form.date_of_visit}
+          onChange={(e) => set("date_of_visit", e.target.value)}
+          required
+        />
       </Field>
 
       <Field label="3. Surname *">
